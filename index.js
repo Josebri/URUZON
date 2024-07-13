@@ -3,7 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const multer = require('multer');
-const cors = require('cors')
+const cors = require('cors');
 const app = express();
 
 const pool = new Pool({
@@ -14,7 +14,12 @@ const pool = new Pool({
     port: 5432,
 });
 
-app.use(cors());
+app.use(cors({
+    origin: 'http://localhost:3000', // Puerto del frontend
+    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+    credentials: true // Si necesitas enviar cookies con las solicitudes
+}));
+
 app.use(express.json());
 
 // Middleware para subir imágenes
@@ -31,18 +36,18 @@ const upload = multer({ storage });
 
 // Registro de usuario
 app.post('/register', async (req, res) => {
-    const { name, lastname, username, password, email, security_question_1, security_question_2, phone, profile } = req.body;
+    const { username, password, email, firstName, lastName, securityQuestion1, securityQuestion2, phone, profile } = req.body;
 
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const result = await pool.query(
-            'INSERT INTO users (name, lastname, username, password, email, security_question_1, security_question_2, phone, profile) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
-            [name, lastname, username, hashedPassword, email, security_question_1, security_question_2, phone, profile]
+            'INSERT INTO users (username, password, email, first_name, last_name, security_question_1, security_question_2, phone, profile) VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9) RETURNING *',
+            [username, hashedPassword, email, firstName, lastName, securityQuestion1, securityQuestion2, phone, profile]
         );
-
-        res.status(201).json(result.rows[0]);
+        res.status(201).send('Usuario registrado');
     } catch (err) {
+        console.error(err);
         res.status(500).json({ error: err.message });
     }
 });
@@ -285,7 +290,7 @@ app.post('/reviews', async (req, res) => {
     }
 });
 
-// Ver comentarios y calificaciones de un producto
+// Ver comentarios y calificaciones de un producto (User)
 app.get('/reviews/:productId', async (req, res) => {
     const { productId } = req.params;
 
@@ -301,7 +306,30 @@ app.get('/reviews/:productId', async (req, res) => {
     }
 });
 
-const PORT = 3000;
+// Eliminar comentario y calificación (User)
+app.delete('/reviews/:id', async (req, res) => {
+    const { id } = req.params;
+
+    try {
+        await pool.query(
+            'DELETE FROM reviews WHERE id = $1',
+            [id]
+        );
+
+        res.json({ message: 'Comentario eliminado' });
+    } catch (err) {
+        res.status(500).json({ error: err.message });
+    }
+});
+
+// Middleware de manejo de errores
+app.use((err, req, res, next) => {
+    console.error(err.stack);
+    res.status(500).send('Algo salió mal');
+});
+
+// Puerto del servidor
+const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-    console.log(`Server running on port ${PORT}`);
+    console.log(`Servidor corriendo en puerto ${PORT}`);
 });
