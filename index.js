@@ -3,6 +3,7 @@ const bcrypt = require('bcrypt');
 const jwt = require('jsonwebtoken');
 const { Pool } = require('pg');
 const multer = require('multer');
+const cors = require('cors')
 const app = express();
 
 const pool = new Pool({
@@ -13,6 +14,7 @@ const pool = new Pool({
     port: 5432,
 });
 
+app.use(cors());
 app.use(express.json());
 
 // Middleware para subir imágenes
