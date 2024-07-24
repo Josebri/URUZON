@@ -1,8 +1,12 @@
 import React, { useState } from 'react';
 import axios from 'axios';
-import './Login.css';
+import { useAuth } from '../../context/AuthContext'; // Asegúrate de que la ruta sea correcta
+import { useNavigate } from 'react-router-dom';
+import './Login.css'; // Asegúrate de que este archivo CSS exista y esté correctamente configurado
 
 const Login = () => {
+  const { login } = useAuth();
+  const navigate = useNavigate();
   const [usernameOrEmail, setUsernameOrEmail] = useState('');
   const [password, setPassword] = useState('');
   const [passwordVisible, setPasswordVisible] = useState(false);
@@ -11,12 +15,8 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
-        usernameOrEmail,
-        password,
-      });
-      console.log(response.data);
-      window.location.href = '/user-inventory'; // Redirige a la vista de inventario de usuario
+      await login(usernameOrEmail, password);
+      navigate('/dashboard'); // Redirige a la vista de dashboard
     } catch (error) {
       console.error('Error al iniciar sesión', error);
       if (error.response && error.response.data && error.response.data.message) {

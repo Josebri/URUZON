@@ -1,0 +1,31 @@
+.product-card {
+    border: 1px solid #ccc;
+    padding: 10px;
+    text-align: center;
+    width: calc(25% - 20px);
+    box-sizing: border-box;
+}
+
+.product-card img {
+    max-width: 100%;
+    height: auto;
+}
+
+.product-card h3 {
+    margin: 10px 0;
+}
+
+.product-card p {
+    margin: 5px 0;
+}
+
+.product-card button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #333;
+    color: white;
+    border: none;
+    cursor: pointer;
+    margin-top: 5px;
+}
