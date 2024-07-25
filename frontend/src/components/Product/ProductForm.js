@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import axios from 'axios';
+import './ProductForm.css';
 
 const ProductForm = () => {
   const [name, setName] = useState('');

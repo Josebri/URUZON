@@ -1,23 +1,8 @@
 .product-list-page {
-    padding: 20px;
-  }
-  
-  .product-list-page form {
-    margin-bottom: 20px;
-  }
-  
-  .product-list-page form div {
-    margin-bottom: 10px;
-  }
-  
-  .product-list-page .products-list {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .product-list-page .product-item {
-    border: 1px solid #ddd;
-    padding: 10px;
-    margin-bottom: 10px;
-  }
-  
+  padding: 20px;
+}
+
+.products-list {
+  display: flex;
+  flex-wrap: wrap;
+}

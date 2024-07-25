@@ -1,75 +1,40 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import './ProductListPage.css';
 
 const ProductListPage = () => {
   const [products, setProducts] = useState([]);
-  const [newProduct, setNewProduct] = useState({
-    name: '',
-    price: '',
-    description: ''
-  });
+  const [error, setError] = useState('');
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const response = await axios.get('http://localhost:5000/api/products');
-      setProducts(response.data);
-    };
-    fetchProducts();
-  }, []);
-
-  const handleAddProduct = async (e) => {
-    e.preventDefault();
+  const fetchProducts = async () => {
     try {
-      const response = await axios.post('http://localhost:5000/api/products', newProduct);
-      setProducts([...products, response.data]);
-      setNewProduct({ name: '', price: '', description: '' });
-    } catch (error) {
-      console.error('Error al agregar producto', error);
+      const response = await axios.get('http://localhost:5000/api/products'); // Asegúrate de que el puerto sea el correcto
+      setProducts(response.data);
+    } catch (err) {
+      console.error('Error al obtener los productos:', err);
+      setError('Error al obtener los productos');
     }
   };
 
+  useEffect(() => {
+    fetchProducts();
+  }, []);
+
   return (
-    <div className="product-list-page">
-      <h2>Lista de Productos</h2>
-      <form onSubmit={handleAddProduct}>
-        <div>
-          <label>Nombre:</label>
-          <input
-            type="text"
-            value={newProduct.name}
-            onChange={(e) => setNewProduct({ ...newProduct, name: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <label>Precio:</label>
-          <input
-            type="number"
-            value={newProduct.price}
-            onChange={(e) => setNewProduct({ ...newProduct, price: e.target.value })}
-            required
-          />
-        </div>
-        <div>
-          <label>Descripción:</label>
-          <textarea
-            value={newProduct.description}
-            onChange={(e) => setNewProduct({ ...newProduct, description: e.target.value })}
-            required
-          />
-        </div>
-        <button type="submit">Agregar Producto</button>
-      </form>
-      <div className="products-list">
-        {products.map(product => (
-          <div key={product.id} className="product-item">
-            <h3>{product.name}</h3>
-            <p>Precio: ${product.price}</p>
+    <div>
+      <h1>Lista de Productos</h1>
+      {error && <p>{error}</p>}
+      <ul>
+        {products.map((product) => (
+          <li key={product.id}>
+            <h2>{product.name}</h2>
             <p>{product.description}</p>
-          </div>
+            <p>Precio: ${product.price}</p>
+            <p>Marca: {product.brand}</p>
+            <p>Cantidad: {product.quantity}</p>
+            {product.imageUrl && <img src={`http://localhost:5000${product.imageUrl}`} alt={product.name} style={{ width: '100px' }} />}
+          </li>
         ))}
-      </div>
+      </ul>
     </div>
   );
 };

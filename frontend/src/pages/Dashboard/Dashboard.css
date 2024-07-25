@@ -1,6 +1,26 @@
-.dashboard {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
+.product-list-page {
     padding: 20px;
-}
+  }
+  
+  .product-list-page h1 {
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  
+  .product-list-page ul {
+    list-style-type: none;
+    padding: 0;
+  }
+  
+  .product-list-page li {
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  
+  .product-list-page img {
+    max-width: 100px;
+    height: auto;
+  }
+  

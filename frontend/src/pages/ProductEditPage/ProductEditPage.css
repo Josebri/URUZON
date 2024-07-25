@@ -1,0 +1,30 @@
+.product-edit-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  .product-edit-page form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-edit-page input,
+  .product-edit-page textarea {
+    margin-bottom: 10px;
+    padding: 10px;
+    font-size: 1em;
+  }
+  
+  .product-edit-page button {
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .product-edit-page button:hover {
+    background-color: #0056b3;
+  }
+  

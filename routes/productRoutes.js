@@ -1,8 +1,61 @@
 const express = require('express');
-const { getAllProducts, addProduct } = require('../controllers/productController');
 const router = express.Router();
 
-router.get('/', getAllProducts);
-router.post('/', addProduct);
+// Datos de productos (puedes reemplazar esto con una base de datos real)
+let products = [];
 
-module.exports = router;
+module.exports = (upload) => {
+  // Obtener todos los productos
+  router.get('/', (req, res) => {
+    res.json(products);
+  });
+
+  // Crear un nuevo producto
+  router.post('/', upload.single('image'), (req, res) => {
+    const { name, description, price, brand, quantity } = req.body;
+    const newProduct = {
+      id: Date.now(),
+      name,
+      description,
+      price,
+      brand,
+      quantity,
+      imageUrl: req.file ? `/uploads/${req.file.filename}` : null
+    };
+    products.push(newProduct);
+    res.status(201).json(newProduct);
+  });
+
+  // Actualizar un producto
+  router.put('/:id', upload.single('image'), (req, res) => {
+    const { id } = req.params;
+    const { name, description, price, brand, quantity } = req.body;
+    const productIndex = products.findIndex((product) => product.id == id);
+
+    if (productIndex !== -1) {
+      const updatedProduct = {
+        ...products[productIndex],
+        name,
+        description,
+        price,
+        brand,
+        quantity,
+        imageUrl: req.file ? `/uploads/${req.file.filename}` : products[productIndex].imageUrl
+      };
+
+      products[productIndex] = updatedProduct;
+      res.json(updatedProduct);
+    } else {
+      res.status(404).json({ message: 'Producto no encontrado' });
+    }
+  });
+
+  // Eliminar un producto
+  router.delete('/:id', (req, res) => {
+    const { id } = req.params;
+    products = products.filter((product) => product.id != id);
+    res.status(204).send();
+  });
+
+  return router;
+};

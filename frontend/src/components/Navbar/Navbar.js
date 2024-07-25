@@ -1,17 +1,15 @@
 import React, { useState } from 'react';
-import { useAuth } from '../../context/AuthContext';
 import { Link } from 'react-router-dom';
 import './Navbar.css';
 
 const Navbar = () => {
-  const { logout } = useAuth();
+  const [showDropdown, setShowDropdown] = useState(false);
   const [userMenuOpen, setUserMenuOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [cartOpen, setCartOpen] = useState(false);
-  const [productsMenuOpen, setProductsMenuOpen] = useState(false);
 
   const handleLogout = () => {
-    logout();
+    // Aquí deberías agregar la lógica para cerrar sesión
     window.location.href = '/login';
   };
 
@@ -20,11 +18,15 @@ const Navbar = () => {
     console.log('Buscando:', searchTerm);
   };
 
+  const toggleDropdown = () => {
+    setShowDropdown((prevState) => !prevState);
+  };
+
   return (
     <nav className="navbar">
       <div className="navbar-left">
         <img
-          src="../../assets/cart-logo.png"
+          src={require('../../assets/cart-logo.png')}
           alt="Carrito"
           className="cart-icon"
           onClick={() => setCartOpen(!cartOpen)}
@@ -50,31 +52,30 @@ const Navbar = () => {
       </div>
       <div className="navbar-right">
         <div className="products-dropdown">
-          <img
-            src="../../assets/products-icon.png"
-            alt="Productos"
-            className="nav-icon"
-            onClick={() => setProductsMenuOpen(!productsMenuOpen)}
-          />
-          {productsMenuOpen && (
+          <span
+            onClick={toggleDropdown}
+          >
+            Productos
+          </span>
+          {showDropdown && (
             <div className="products-menu">
-              <Link to="/products" className="products-menu-item">Ver Productos en Venta</Link>
-              <Link to="/products/new" className="products-menu-item">Nuevo Producto</Link>
-              <Link to="/products/edit" className="products-menu-item">Editar Producto</Link>
-              <Link to="/products/delete" className="products-menu-item">Eliminar Producto</Link>
+              <Link to="/products" className="products-menu-item" onClick={() => setShowDropdown(false)}>Ver Productos en Venta</Link>
+              <Link to="/product/add" className="products-menu-item" onClick={() => setShowDropdown(false)}>Nuevo Producto</Link>
+              <Link to="/product/edit" className="products-menu-item" onClick={() => setShowDropdown(false)}>Editar Producto</Link>
+              <Link to="/product/delete" className="products-menu-item" onClick={() => setShowDropdown(false)}>Eliminar Producto</Link>
             </div>
           )}
         </div>
         <Link to="/favorites" className="nav-link favorites-link">Favoritos</Link>
         <img
-          src="../../assets/usuario.png"
+          src={require('../../assets/usuario.png')}
           alt="Usuario"
           className="user-icon"
           onClick={() => setUserMenuOpen(!userMenuOpen)}
         />
         {userMenuOpen && (
           <div className="user-menu">
-            <button onClick={() => window.location.href = '/profile'}>Actualizar Perfil</button>
+            <Link to="/profile">Actualizar Perfil</Link>
             <button onClick={handleLogout}>Cerrar Sesión</button>
           </div>
         )}

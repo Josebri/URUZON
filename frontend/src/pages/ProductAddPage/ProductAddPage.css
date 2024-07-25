@@ -1,0 +1,74 @@
+.product-add-page {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 20px;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .product-add-page h2 {
+    text-align: center;
+    margin-bottom: 20px;
+  }
+  
+  .product-add-page form {
+    display: flex;
+    flex-direction: column;
+  }
+  
+  .product-add-page label {
+    margin-bottom: 15px;
+    font-weight: bold;
+  }
+  
+  .product-add-page input[type="text"],
+  .product-add-page input[type="number"],
+  .product-add-page textarea,
+  .product-add-page input[type="file"] {
+    width: 100%;
+    padding: 8px;
+    margin-top: 5px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  
+  .product-add-page textarea {
+    resize: vertical;
+    min-height: 100px;
+  }
+  
+  .product-add-page button {
+    background-color: #007bff;
+    color: white;
+    border: none;
+    padding: 10px 15px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+  }
+  
+  .product-add-page button:hover {
+    background-color: #0056b3;
+  }
+  
+  .product-add-page .message {
+    margin-top: 15px;
+    padding: 10px;
+    text-align: center;
+    border-radius: 4px;
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
+  .product-add-page .message.error {
+    background-color: #f8d7da;
+    color: #721c24;
+  }
+  
+  .product-add-page .message.success {
+    background-color: #d4edda;
+    color: #155724;
+  }
+  
