@@ -1,46 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
-import './ProductDetailPage.css';
+import { useParams, useNavigate } from 'react-router-dom';
 
 const ProductDetailPage = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const navigate = useNavigate();
+  const [product, setProduct] = useState({});
+  const userId = 'currentUserId'; // Obtén el ID del usuario autenticado de tu sistema de autenticación
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await axios.get(`/api/products/${id}`);
-        setProduct(response.data);
-        setLoading(false);
-      } catch (error) {
-        setError('Error al obtener los detalles del producto');
-        setLoading(false);
-      }
-    };
-
-    fetchProduct();
+  const fetchProduct = useCallback(async () => {
+    try {
+      const response = await axios.get(`/api/products/${id}`);
+      setProduct(response.data);
+    } catch (error) {
+      console.error('Error al obtener el producto:', error);
+    }
   }, [id]);
 
-  if (loading) return <p>Cargando...</p>;
-  if (error) return <p>{error}</p>;
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/api/products/${id}`, {
+        data: { userId }
+      });
+      navigate('/products');
+    } catch (error) {
+      console.error('Error al eliminar el producto:', error);
+    }
+  };
 
   return (
-    <div className="product-detail">
-      {product ? (
+    <div>
+      <h1>{product.name}</h1>
+      <p>{product.description}</p>
+      <p>{product.price}</p>
+      <p>{product.quantity}</p>
+      <p>{product.brand}</p>
+      <img src={product.image} alt={product.name} />
+      {product.userId === userId && (
         <>
-          <img src={product.imageUrl} alt={product.name} />
-          <h1>{product.name}</h1>
-          <p>Precio: ${product.price}</p>
-          <p>Descripción: {product.description}</p>
-          <p>Vendedor: {product.seller}</p>
-          <p>Disponibilidad: {product.availability}</p>
-          <p>Cantidad: {product.quantity}</p>
+          <button onClick={() => navigate(`/edit-product/${product._id}`)}>Editar</button>
+          <button onClick={handleDelete}>Eliminar</button>
         </>
-      ) : (
-        <p>Producto no encontrado</p>
       )}
     </div>
   );

@@ -1,51 +1,62 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
-import './ProductEditPage.css';
 
-const ProductEditPage = () => {
+const EditProductPage = () => {
   const { id } = useParams();
-  const [product, setProduct] = useState({
+  const navigate = useNavigate();
+  const [formValues, setFormValues] = useState({
     name: '',
+    description: '',
     price: '',
     quantity: '',
-    brand: '',
-    description: '',
-    image: null,
+    brand: ''
   });
-  const navigate = useNavigate();
+  const [file, setFile] = useState(null);
+  const userId = 'currentUserId'; // Obtén el ID del usuario autenticado de tu sistema de autenticación
 
-  useEffect(() => {
-    const fetchProduct = async () => {
-      try {
-        const response = await axios.get(`/api/products/${id}`);
-        setProduct(response.data);
-      } catch (error) {
-        console.error('Error al obtener los detalles del producto:', error);
-      }
-    };
-    fetchProduct();
+  const fetchProduct = useCallback(async () => {
+    try {
+      const response = await axios.get(`/api/products/${id}`);
+      setFormValues({
+        name: response.data.name,
+        description: response.data.description,
+        price: response.data.price,
+        quantity: response.data.quantity,
+        brand: response.data.brand
+      });
+    } catch (error) {
+      console.error('Error al obtener el producto:', error);
+    }
   }, [id]);
 
-  const handleInputChange = (e) => {
+  useEffect(() => {
+    fetchProduct();
+  }, [fetchProduct]);
+
+  const handleChange = (e) => {
     const { name, value } = e.target;
-    setProduct({ ...product, [name]: value });
+    setFormValues({
+      ...formValues,
+      [name]: value
+    });
   };
 
-  const handleImageChange = (e) => {
-    setProduct({ ...product, image: e.target.files[0] });
+  const handleFileChange = (e) => {
+    setFile(e.target.files[0]);
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (product.price < 0 || product.quantity < 0) {
-      alert("El precio y la cantidad no pueden ser negativos.");
-      return;
-    }
-
     const formData = new FormData();
-    for (const key in product) {
-      formData.append(key, product[key]);
+    formData.append('name', formValues.name);
+    formData.append('description', formValues.description);
+    formData.append('price', formValues.price);
+    formData.append('quantity', formValues.quantity);
+    formData.append('brand', formValues.brand);
+    formData.append('userId', userId);
+    if (file) {
+      formData.append('image', file);
     }
 
     try {
@@ -61,56 +72,65 @@ const ProductEditPage = () => {
   };
 
   return (
-    <div className="product-edit-page">
-      <h2>Editar Producto</h2>
+    <div>
+      <h1>Editar Producto</h1>
       <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre del producto"
-          value={product.name}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="number"
-          name="price"
-          placeholder="Precio"
-          value={product.price}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="number"
-          name="quantity"
-          placeholder="Cantidad"
-          value={product.quantity}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="text"
-          name="brand"
-          placeholder="Marca"
-          value={product.brand}
-          onChange={handleInputChange}
-          required
-        />
-        <textarea
-          name="description"
-          placeholder="Descripción"
-          value={product.description}
-          onChange={handleInputChange}
-          required
-        />
-        <input
-          type="file"
-          onChange={handleImageChange}
-        />
+        <div>
+          <label>Nombre</label>
+          <input
+            type="text"
+            name="name"
+            value={formValues.name}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Descripción</label>
+          <input
+            type="text"
+            name="description"
+            value={formValues.description}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Precio</label>
+          <input
+            type="number"
+            name="price"
+            value={formValues.price}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Cantidad</label>
+          <input
+            type="number"
+            name="quantity"
+            value={formValues.quantity}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Marca</label>
+          <input
+            type="text"
+            name="brand"
+            value={formValues.brand}
+            onChange={handleChange}
+          />
+        </div>
+        <div>
+          <label>Imagen</label>
+          <input
+            type="file"
+            onChange={handleFileChange}
+          />
+        </div>
         <button type="submit">Actualizar Producto</button>
       </form>
     </div>
   );
 };
 
-export default ProductEditPage;
+export default EditProductPage;

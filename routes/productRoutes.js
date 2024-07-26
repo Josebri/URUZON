@@ -4,6 +4,19 @@ const router = express.Router();
 // Datos de productos (puedes reemplazar esto con una base de datos real)
 let products = [];
 
+// Endpoint para buscar productos por nombre
+router.get('/search', (req, res) => {
+  const searchTerm = req.query.q ? req.query.q.toLowerCase() : '';
+  if (searchTerm) {
+    const filteredProducts = products.filter(product =>
+      product.name.toLowerCase().includes(searchTerm)
+    );
+    res.json(filteredProducts);
+  } else {
+    res.json(products); // Devuelve todos los productos si no hay término de búsqueda
+  }
+});
+
 module.exports = (upload) => {
   // Obtener todos los productos
   router.get('/', (req, res) => {

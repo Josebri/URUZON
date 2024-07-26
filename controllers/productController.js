@@ -12,11 +12,29 @@ const getProducts = async (req, res) => {
   }
 };
 
+// Obtener un producto por ID
+const getProductById = async (req, res) => {
+  const { id } = req.params;
+
+  try {
+    const product = await Product.findById(id);
+
+    if (!product) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    res.json(product);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener producto' });
+  }
+};
+
 // Añadir un nuevo producto
 const addProduct = async (req, res) => {
-  const { name, description, price, quantity, brand } = req.body;
+  const { name, description, price, quantity, brand, userId } = req.body;  // userId será el ID del usuario que crea el producto
   const image = req.file ? `/uploads/${req.file.filename}` : null;
 
+  // Validar precio y cantidad
   if (price < 0 || quantity < 0) {
     return res.status(400).json({ message: 'El precio y la cantidad deben ser positivos' });
   }
@@ -29,6 +47,7 @@ const addProduct = async (req, res) => {
       quantity,
       brand,
       image,
+      userId // Asociar el producto con el usuario creador
     });
 
     await newProduct.save();
@@ -41,9 +60,10 @@ const addProduct = async (req, res) => {
 // Actualizar un producto existente
 const updateProduct = async (req, res) => {
   const { id } = req.params;
-  const { name, description, price, quantity, brand } = req.body;
+  const { name, description, price, quantity, brand, userId } = req.body;
   const image = req.file ? `/uploads/${req.file.filename}` : null;
 
+  // Validar precio y cantidad
   if (price < 0 || quantity < 0) {
     return res.status(400).json({ message: 'El precio y la cantidad deben ser positivos' });
   }
@@ -53,6 +73,11 @@ const updateProduct = async (req, res) => {
 
     if (!product) {
       return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    // Verificar si el usuario que hace la petición es el creador del producto
+    if (product.userId.toString() !== userId) {
+      return res.status(403).json({ message: 'No tienes permisos para editar este producto' });
     }
 
     product.name = name || product.name;
@@ -82,12 +107,18 @@ const updateProduct = async (req, res) => {
 // Eliminar un producto
 const deleteProduct = async (req, res) => {
   const { id } = req.params;
+  const { userId } = req.body;
 
   try {
-    const product = await Product.findByIdAndDelete(id);
+    const product = await Product.findById(id);
 
     if (!product) {
       return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    // Verificar si el usuario que hace la petición es el creador del producto
+    if (product.userId.toString() !== userId) {
+      return res.status(403).json({ message: 'No tienes permisos para eliminar este producto' });
     }
 
     // Eliminar la imagen del servidor
@@ -98,6 +129,7 @@ const deleteProduct = async (req, res) => {
       }
     }
 
+    await Product.findByIdAndDelete(id);
     res.json({ message: 'Producto eliminado' });
   } catch (error) {
     res.status(500).json({ message: 'Error al eliminar producto' });
@@ -106,6 +138,7 @@ const deleteProduct = async (req, res) => {
 
 module.exports = {
   getProducts,
+  getProductById,
   addProduct,
   updateProduct,
   deleteProduct,

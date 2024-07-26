@@ -16,6 +16,10 @@ const Navbar = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     console.log('Buscando:', searchTerm);
+    // Aquí podrías redirigir a la página de resultados de búsqueda
+    // o hacer una llamada a la API para buscar productos.
+    // Por ejemplo:
+    // window.location.href = `/products?search=${searchTerm}`;
   };
 
   const toggleDropdown = () => {
@@ -52,11 +56,7 @@ const Navbar = () => {
       </div>
       <div className="navbar-right">
         <div className="products-dropdown">
-          <span
-            onClick={toggleDropdown}
-          >
-            Productos
-          </span>
+          <span onClick={toggleDropdown}>Productos</span>
           {showDropdown && (
             <div className="products-menu">
               <Link to="/products" className="products-menu-item" onClick={() => setShowDropdown(false)}>Ver Productos en Venta</Link>
@@ -66,7 +66,7 @@ const Navbar = () => {
             </div>
           )}
         </div>
-        <Link to="/favorites" className="nav-link favorites-link">Favoritos</Link>
+        <Link to="/dashboard" className="nav-link home-link">Home</Link>
         <img
           src={require('../../assets/usuario.png')}
           alt="Usuario"

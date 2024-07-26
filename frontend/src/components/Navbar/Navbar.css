@@ -18,7 +18,7 @@
 }
 
 .navbar-center {
-  flex-grow: 1;
+  flex-grow: 2; /* Increased to make the navbar longer */
   display: flex;
   justify-content: center;
 }
@@ -167,6 +167,12 @@
   text-decoration: underline;
 }
 
-.favorites-link {
+.home-link {
   margin-right: 20px;
+  text-decoration: none;
+  color: #007bff;
+}
+
+.home-link:hover {
+  text-decoration: underline;
 }
